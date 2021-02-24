@@ -2,6 +2,7 @@
 node_modules
 /dist
 
+./src/assets/dataset/*
 
 # local env files
 .env.local
