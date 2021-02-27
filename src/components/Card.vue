@@ -1,13 +1,14 @@
 <template>
-  <div class="column is-2" >
-    <a :href="repost.track.permalink_url" target="_blank"  v-if="repost.track"> 
-      <figure class="image is-square cover-art">
+  <div class="column" v-if="repost.track">
+    <a :href="repost.track.permalink_url" target="_blank"> 
+      <figure class="image is-square cover-art ifEmpty">
         <div class="my-tag">   
             {{ repost.track.title }} <br/>
             @{{repost.track.user.permalink}} <br/>
             <time datetime="2016-1-1">{{ repost.created_at }}</time>
         </div>
-        <NwImg alt="logo" :src="repost.track.artwork_url" />
+        <NwImg :src="repost.track.artwork_url" v-if="repost.track.artwork_url"/>
+        <div v-if="!repost.track.artwork_url"></div>
       </figure>
     </a>
   </div>
@@ -23,6 +24,12 @@ export default {
 </script>
 
 <style scoped>
+.ifEmpty {
+  background: pink;
+  width: 100%;
+  height: 100%;
+}
+
 .my-tag {
   position: absolute;
   top: 0;
