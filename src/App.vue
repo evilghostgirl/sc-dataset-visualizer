@@ -10,11 +10,19 @@
         <div class="column is-12-mobile is-6-tablet is-6-desktop">
           <div class="field has-addons">
             <div class="control">
-              <input class="input" placeholder="Find a track" type="search" name="xddd" id="xd"
-                v-model="searchedPhrase" />
+              <input class="input" 
+                     placeholder="Find a track" 
+                     type="search" 
+                     name="searchedPhrase" 
+                     id="searchedPhrase"
+                     v-model="searchedPhrase" 
+                     @keyup.enter="search('phrase')"/>
             </div>
             <div class="control">
-              <button class="button is-dark" v-on:click="search('phrase')">Search</button>
+              <button class="button is-dark" 
+                      v-on:click="search('phrase')">
+                      Search
+              </button>
             </div>
             <div class="control">
               <button class="button is-dark" v-on:click="clear">Cancel</button>
@@ -22,8 +30,14 @@
           </div>
           <div class="field has-addons">
             <div class="select">
-              <select name="periods" v-model="selectedPeriod" @change="search('date')">
-                <option :value="period" v-for="period in periods" :key="period">{{ period }}</option>
+              <select name="periods" 
+                      v-model="selectedPeriod" 
+                      @change="search('date')">
+                <option :value="period" 
+                          v-for="period in periods" 
+                          :key="period">
+                          {{ period }}
+                </option>
               </select>
             </div>
           </div>
@@ -44,8 +58,12 @@
           </div>
           <div class="container" v-if="!isTagsHidden">
             <div class="buttons are-small">
-              <button class="button is-link" v-for="tag in tags" :key="tag" :value="tag" @click="search('tag', tag)">
-                {{ tag }}</button>
+              <button class="button is-link" 
+                      v-for="tag in tags" 
+                      :key="tag" :value="tag" 
+                      @click="search('tag', tag)">
+                     {{ tag }}
+              </button>
             </div>
           </div>
         </div>
@@ -53,22 +71,21 @@
     </section>
     <section class="section">
       <div class="columns is-multiline is-mobile">
-        <div class="is-12-mobile is-12-tablet is-12-desktop has-text-primary-light"> Found {{searchedData.length}} of
-          {{soundcloud.length}} tracks
-
-
-          <div> {{tagAnalitics.datasets[0].data}}</div>
+        <div class="column is-12-mobile is-12-tablet is-12-desktop has-text-primary-light"> 
+          Found {{searchedData.length}} of {{soundcloud.length}} tracks 
         </div>
 
-        <Card class="is-6-mobile is-3-tablet is-2-desktop" v-for="repost in searchedData" :key="repost.uuid"
-          :repost="repost" />
+        <Card class="column is-6-mobile is-3-tablet is-2-desktop" 
+              v-for="repost in searchedData" 
+              :key="repost.uuid"
+              :repost="repost" />
       </div>
     </section>
   </div>
 </template>
 
 <script>
-  import myData from './assets/dataset/sorted.json'
+  import myData from './assets/dataset/sorted.example.json'
   import Card from './components/Card.vue'
   import User from './components/User.vue'
   import LineChart from './components/LineChart.vue'
@@ -169,7 +186,6 @@
             }
             dataset[element] += 1;
           });
-        console.log(dataset)
         var datac = [];
         Object.entries(dataset).forEach(e => datac.push({
           x: e[0] + '-01',
@@ -201,7 +217,6 @@
           x: e[0] + '-01',
           y: e[1]
         }));
-        console.log(datac)
         this.tagAnalitics = {
           labels: [],
           datasets: [{
