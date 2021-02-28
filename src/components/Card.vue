@@ -7,7 +7,7 @@
             @{{repost.track.user.permalink}} <br/>
             <time datetime="2016-1-1">{{ repost.created_at }}</time>
         </div>
-        <NwImg :src="repost.track.artwork_url" v-if="repost.track.artwork_url"/>
+        <NwImg alt="thumbnail" :src="repost.track.artwork_url" v-if="repost.track.artwork_url"/>
         <div v-if="!repost.track.artwork_url"></div>
       </figure>
     </a>
