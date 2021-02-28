@@ -33,6 +33,7 @@
           <button class="button is-link" v-for="tag in tags" :key="tag" :value="tag" @click="search('tag', tag)"> {{ tag }}</button>
         </div>
       </div>
+       <line-chart :chart-data="tagAnalitics" :options="options" style="width: 300px; height:300px;"/>
       <div class="columns is-multiline is-mobile" v-if="!isLoading">
         <Card class="is-6-mobile is-3-tablet is-2-desktop" v-for="repost in searchedData" :key="repost.uuid" :repost="repost"/>
       </div>
@@ -44,21 +45,44 @@
 import myData from './assets/dataset/sorted.json'
 import Card from './components/Card.vue'
 import User from './components/User.vue'
+import LineChart from './components/LineChart.vue'
 
 export default {
   name: 'App',
   components: {
     Card,
-    User
+    User,
+    LineChart
   },
   data: function () {
     return {
       soundcloud: myData.list,
-      searchedData: myData.list,
+      searchedData: [],
       searchedPhrase: "",
       isLoading: false,
       months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
-      selectedPeriod: null
+      selectedPeriod: null,
+      tagAnalitics: {
+        labels: [],
+        datasets: [{
+            label: 'Repost statistics',
+            backgroundColor: '#5AC18E',
+            data: []
+          }
+        ]
+      },
+      options: {
+        scales: {
+            xAxes: [{
+                type: 'time',
+                display: true,
+                distribution: 'series',
+                time: {
+                    unit:"month",
+                }
+            }]
+        }
+    }
     }
   },
   methods: {
@@ -71,13 +95,13 @@ export default {
 
         case "tag":
           searched = value ? this.searchByTag(value) : this.soundcloud;
+          this.tagAnalitics.datasets[0].data = this.createDatasetByTag(value)
         break;
 
         case "phrase": 
           searched = this.searchedPhrase ? this.searchByPhrase(this.searchedPhrase.toLowerCase()) : this.soundcloud;
         break;
       }
-      console.log(searched);
       this.isLoading = false;
       this.searchedData = searched;
     },
@@ -105,10 +129,34 @@ export default {
     },
     searchByDate: function (yearMonth) {
       this.isLoading = true;
-      console.log(yearMonth)
       return this.soundcloud
               .filter(entry => entry.created_at.includes(yearMonth)) 
     },
+    createDatasetByTag: function (tag) {
+      var dataset = {};
+
+      this.soundcloud
+              .filter(entry => entry && entry.track && entry.track.genre)
+              .filter(entry => entry.track.genre.toLowerCase().includes(tag))
+              .map(entry => entry.created_at.split("T")[0].slice(0,-3))
+                  .forEach(element => {
+                    if (!dataset[element]) {
+                      dataset[element] = 0;
+                    }
+                    dataset[element] +=1;
+                  });
+      var datac = [];
+      Object.entries(dataset).forEach(e => datac.push({x: e[0] + '-01', y: e[1]}));   
+      this.tagAnalitics = {
+        labels: [],
+        datasets: [{
+            label: 'Repost statistics',
+            backgroundColor: '#5AC18E',
+            data: datac
+          }
+        ]
+      };
+    }
   },
   computed: {
     tags: function () {
@@ -116,7 +164,6 @@ export default {
                         .filter(entry => entry && entry.track && entry.track.genre)
                         .map(entry => entry.track.genre.toLowerCase())
                         .sort();
-      console.log(new Set(genres))
       return new Set(genres)
     },
     years: function () {
@@ -134,7 +181,6 @@ export default {
                         .filter(entry => entry && entry.created_at)
                         .map(entry => entry.created_at.split("T")[0].slice(0,-3))
                         .sort();
-      console.log(new Set(periods))
       return new Set(periods)
     }
   }
