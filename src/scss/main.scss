@@ -1,0 +1,40 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
+
+$grey-dark: #242324;
+$lavender: #b99dd8;
+$grey-light: #6b6770;
+$light-violet: #836aa1;
+$grey: #454446;
+$violet: #5105b4;
+$dark-violet: #322247;
+
+$family-sans-serif: "Nunito", sans-serif;
+$primary: $lavender;
+$link: $grey-light;
+
+$input-color: $primary;
+$body-background-color: $grey-dark;
+$input-border-color: transparent;
+$input-background-color: $grey;
+
+// divider plugin
+$divider-background-color: $grey;
+$tabs-border-bottom-color: $violet;
+
+@import "../../node_modules/bulma/bulma.sass";
+@import "../../node_modules/@creativebulma/bulma-divider";
+
+.is-rounded {
+    border-radius: 5px;
+}
+
+.is-scrollable {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.is-fullheight {
+    max-height: 90vh;
+    height: 90vh;
+}

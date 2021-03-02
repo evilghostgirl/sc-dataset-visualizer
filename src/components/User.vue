@@ -1,14 +1,14 @@
 <template>
-  <div class="columns">
-    <div class="column is-2">
-      <figure class="image is-128x128 cover-art">
+  <div class="columns is-multiline">
+    <div class="column is-12-mobile is-4-tablet">
+      <figure class="image is-square cover-art">
         <NwImg class="is-rounded" alt="logo" :src="userData.avatar_url" />
       </figure>
     </div>
-    <div class="column is-10 is-align-self-center">
-      <a :href="userData.permalink_url" class="has-text-link-light" target="_blank"> {{ userData.first_name }} </a> <br/>
-      {{ userData.full_name }} <br/>
-      {{ userData.city }}
+    <div class="column is-12-mobile is-8-tablet is-align-self-center">
+      <a :href="userData.permalink_url" class="has-text-link-light has-background-black pl-1 pr-1" target="_blank"> {{ userData.first_name }} </a> <br/>
+      <span class="has-text-link-light has-background-black pl-1 pr-1"> {{ userData.full_name }} </span> <br/>
+      <span class="has-text-link-light has-background-black pl-1 pr-1"> {{ userData.city }} </span>
     </div>
   </div>
 </template>

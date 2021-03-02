@@ -3,9 +3,9 @@
     <a :href="repost.track.permalink_url" target="_blank"> 
       <figure class="image is-square cover-art ifEmpty">
         <div class="my-tag">   
-            {{ repost.track.title }} <br/>
-            @{{repost.track.user.permalink}} <br/>
-            <time datetime="2016-1-1">{{ repost.created_at }}</time>
+            <span>{{ repost.track.title }} </span>
+            <span style="font-size: 0.8rem;"> @{{repost.track.user.permalink}} </span>
+            <time datetime="2016-1-1" style="font-size: 0.6rem;">{{ repost.created_at }}</time>
         </div>
         <NwImg alt="thumbnail" :src="repost.track.artwork_url" v-if="repost.track.artwork_url"/>
         <div v-if="!repost.track.artwork_url"></div>
@@ -27,7 +27,6 @@ export default {
 .ifEmpty {
   background: pink;
   width: 100%;
-  height: 100%;
 }
 
 .my-tag {
@@ -36,7 +35,7 @@ export default {
   left: 0;
   height: 100%;
   width: 100%;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   font-weight: bold;
   z-index: 10;
   background-color: black;
