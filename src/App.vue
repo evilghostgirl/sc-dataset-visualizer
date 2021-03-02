@@ -11,8 +11,13 @@
             <div class="column is-12-mobile is-8-tablet is-8-desktop">
               <div class="field has-addons">
                 <div class="control">
-                  <input class="input is-rounded" placeholder="Find a track" type="search" name="searchedPhrase"
-                    id="searchedPhrase" v-model="searchedPhrase" @keyup.enter="search('phrase')" />
+                  <input class="input is-rounded" 
+                         placeholder="Find a track" 
+                         type="search" 
+                         name="searchedPhrase"
+                         id="searchedPhrase" 
+                         v-model="searchedPhrase" 
+                         @keyup.enter="search('phrase')" />
                 </div>
                 <div class="control">
                   <button class="button is-dark is-rounded" v-on:click="search('phrase')">
@@ -36,15 +41,15 @@
                 </div>
               </div>
             </div>
-
           </div>
-
+<!-- {{ artistStatistics }} -->
 
           <line-chart :chart-data="tagAnalitics" 
                       :options="options" 
                       class="has-background-dark is-rounded p-2"
                       style="max-height:300px;" />
-          <div class="tabs is-fullwidth" @click="isTagsHidden=!isTagsHidden">
+
+          <div class="tabs is-fullwidth" v-bind:class="[isTagsHidden ? '' : 'has-background-info', '']" @click="isTagsHidden=!isTagsHidden;areArtistsHidden=true">
             <ul>
               <li>
                 <a>
@@ -55,19 +60,38 @@
               </li>
             </ul>
           </div>
+   
           <div class="container is-scrollable" v-if="!isTagsHidden" style="max-height:200px;">
             <div class="buttons are-small">
-              <button class="button is-link" v-for="tag in tags" :key="tag" :value="tag" @click="search('tag', tag)">
-                {{ tag }}
+              <button class="button is-link" v-for="tag in tagsStatistics" :key="tag.name" :value="tag.name" @click="search('tag', tag.name)">
+                {{ tag.name }} ({{ tag.count }})
+              </button>
+            </div>
+          </div>
+          <div class="tabs is-fullwidth" v-bind:class="[areArtistsHidden ? '' : 'has-background-info', '']" @click="areArtistsHidden=!areArtistsHidden;isTagsHidden=true">
+            <ul>
+              <li>
+                <a>
+                  <span class="icon"><i class="fas fa-angle-left" aria-hidden="true"></i></span>
+                  <span v-if="areArtistsHidden" class="has-text-primary">Show top 100 artists</span>
+                  <span v-if="!areArtistsHidden" class="has-text-primary">Hide top 100 artists</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="container is-scrollable" v-if="!areArtistsHidden" style="max-height:200px;">
+            <div class="buttons are-small">
+              <button class="button is-link" v-for="artist in artistsStatistics" :key="artist.name" :value="artist.name" @click="searchedPhrase=artist.name;search('phrase')">
+                {{ artist.name }} ({{ artist.count }})
               </button>
             </div>
           </div>
         </div>
+        
         <div class="column is-12-mobile is-12-tablet is-6-desktop is-8-widescreen has-text-primary-light">
           <div class="columns is-mobile is-multiline is-scrollable is-fullheight is-align-content-flex-start">
             <div class="column is-12-mobile is-12-tablet is-12-desktop">
               Found {{searchedData.length}} of {{soundcloud.length}} tracks
-
             </div>
 
             <Card class="column is-6-mobile is-4-tablet is-4-desktop is-2-widescreen" 
@@ -112,6 +136,7 @@
           }]
         },
         isTagsHidden: true,
+        areArtistsHidden: true,
         options: {
           maintainAspectRatio: false,
           scales: {
@@ -172,7 +197,7 @@
       searchByTag: function (tag) {
         return this.soundcloud
           .filter(entry => entry && entry.track && entry.track.genre)
-          .filter(entry => this.str(entry.track.genre).includes(this.str(tag)))
+          .filter(entry => this.str(entry.track.genre) == this.str(tag))
       },
       searchByDate: function (yearMonth) {
         return this.soundcloud
@@ -184,15 +209,11 @@
           .map(entry => entry.created_at.split("T")[0].slice(0, -3))
           .forEach(element => {
             if (!dataset[element]) {
-              dataset[element] = 0;
+              dataset[element] = {x: element + '-01', y: 0};
             }
-            dataset[element] += 1;
+            dataset[element].y += 1;
           });
-        var datac = [];
-        Object.entries(dataset).forEach(e => datac.push({
-          x: e[0] + '-01',
-          y: e[1]
-        }));
+        var datac = Object.values(dataset);
         this.tagAnalitics = {
           labels: [],
           datasets: [{
@@ -204,12 +225,34 @@
       }
     },
     computed: {
-      tags: function () {
-        let genres = this.soundcloud
+      tagsStatistics: function () {
+         var dataset = {};
+         this.soundcloud
           .filter(entry => entry && entry.track && entry.track.genre)
           .map(entry => entry.track.genre.toLowerCase())
-          .sort();
-        return new Set(genres)
+          .forEach(element => {
+            if (!dataset[element]) {
+              dataset[element] = {name: element, count: 0 };
+            }
+            dataset[element].count += 1;
+          });
+          var sorted = Object.values(dataset).sort((a,b) => b.count - a.count);
+          return sorted
+      },
+      artistsStatistics: function () {
+          var dataset = {};
+         this.soundcloud
+          .filter(entry => entry && entry.track && entry.track.user && entry.track.user.permalink)
+          .map(entry => entry.track.user.permalink.toLowerCase())
+          .forEach(element => {
+            if (!dataset[element]) {
+              dataset[element] = {name: element, count: 0 };
+            }
+            dataset[element].count += 1;
+          });
+          var top100 = Object.values(dataset).sort((a,b) => b.count - a.count).slice(0,100);
+          console.log(top100)
+          return top100
       },
       periods: function () {
         let periods = this.soundcloud
